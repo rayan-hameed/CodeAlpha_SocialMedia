@@ -15,27 +15,51 @@ class UserRegistrationView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
+            # Standard way to create a user with hashed password
             user = User.objects.create_user(
                 username=serializer.validated_data['username'],
                 email=serializer.validated_data.get('email', ''),
-                password=serializer.validated_data['password']
+                password=request.data.get('password') # Use request.data to be 100% sure
             )
             token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key, 'user_id': user.pk, 'username': user.username}, status=status.HTTP_201_CREATED)
+            return Response({
+                'token': token.key, 
+                'user_id': user.pk, 
+                'username': user.username
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+from django.contrib.auth import authenticate
 
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'username': user.username
-        })
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        if not username or not password:
+            return Response({'detail': 'Please provide both username and password.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # Try finding user by username OR email for better UX
+        try:
+            if '@' in username:
+                user = User.objects.get(email=username)
+            else:
+                user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({'non_field_errors': ['User not found.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        if user.check_password(password):
+            if not user.is_active:
+                return Response({'non_field_errors': ['User account is disabled.']}, status=status.HTTP_400_BAD_REQUEST)
+                
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'token': token.key,
+                'user_id': user.pk,
+                'username': user.username
+            })
+        else:
+            return Response({'non_field_errors': ['Incorrect password.']}, status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()

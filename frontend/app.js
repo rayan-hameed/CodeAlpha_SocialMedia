@@ -121,7 +121,9 @@ class SocialApp {
                 localStorage.setItem('nexus_username', this.username);
                 this.showApp();
             } else {
-                alert('Login failed. Please check your credentials.');
+                const errorData = await response.json();
+                console.error("Login Error Details:", errorData);
+                alert('Login failed: ' + (errorData.non_field_errors || errorData.detail || JSON.stringify(errorData)));
             }
         } catch (error) {
             console.error('Error during login:', error);
