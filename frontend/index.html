@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Connect with the World</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Auth Section -->
+    <div id="auth-section" class="auth-container fade-in">
+        <h1>Nexus</h1>
+        <p style="color: var(--text-muted)">Your world, connected.</p>
+
+        <div class="auth-card glass">
+            <div id="login-form">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="login-username" placeholder="Enter username">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••">
+                </div>
+                <button class="btn btn-primary" onclick="app.login()">Login</button>
+                <p style="margin-top: 1.5rem; font-size: 0.9rem">
+                    Don't have an account? <a href="#" onclick="app.toggleAuth()" style="color: var(--primary)">Sign
+                        up</a>
+                </p>
+            </div>
+
+            <div id="register-form" style="display: none;">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="reg-username" placeholder="Choose username">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="reg-email" placeholder="email@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="reg-password" placeholder="••••••••">
+                </div>
+                <button class="btn btn-primary" onclick="app.register()">Create Account</button>
+                <p style="margin-top: 1.5rem; font-size: 0.9rem">
+                    Already have an account? <a href="#" onclick="app.toggleAuth()" style="color: var(--primary)">Log
+                        in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Section -->
+    <div id="app-section" style="display: none;">
+        <header class="app-header glass">
+            <h2
+                style="background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Nexus</h2>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <span id="nav-username"></span>
+                <button class="action-btn" onclick="app.logout()" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Left Sidebar -->
+            <div class="side-nav">
+                <div class="glass" style="padding: 1.5rem">
+                    <nav style="display: flex; flex-direction: column; gap: 1rem;">
+                        <a href="#" class="action-btn" onclick="app.showHome()" id="nav-home"
+                            style="color: var(--primary)"><i class="fa-solid fa-house"></i> Home</a>
+                        <a href="#" class="action-btn" onclick="app.showExplore()" id="nav-explore"><i
+                                class="fa-solid fa-compass"></i> Explore</a>
+                        <a href="#" class="action-btn" onclick="app.showNotifications()" id="nav-notifications"><i
+                                class="fa-solid fa-bell"></i> Notifications</a>
+                        <a href="#" class="action-btn" onclick="app.showProfile()" id="nav-profile"><i
+                                class="fa-solid fa-user"></i> Profile</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Feed -->
+            <div id="feed-container">
+                <div class="create-post glass fade-in" id="create-post-box">
+                    <textarea id="post-input" placeholder="What's on your mind?"></textarea>
+
+                    <div id="media-preview" style="margin-bottom: 1rem; display: none;"></div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <input type="file" id="media-upload" hidden accept="image/*,video/*"
+                            onchange="app.handleFileSelect(this)">
+                        <button class="action-btn" onclick="document.getElementById('media-upload').click()">
+                            <i class="fa-solid fa-image"></i> Add Media
+                        </button>
+                        <button class="btn btn-primary" style="width: auto; padding: 0.5rem 1.5rem"
+                            onclick="app.createPost()">Post</button>
+                    </div>
+                </div>
+
+                <div id="page-title" style="margin-bottom: 1.5rem; display: none;">
+                    <h3></h3>
+                </div>
+
+                <div id="posts-list">
+                    <!-- Posts will be injected here -->
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="side-nav">
+                <div class="glass" style="padding: 1.5rem">
+                    <h3 style="margin-bottom: 1rem">Who to follow</h3>
+                    <div id="suggestions-list" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Suggestions will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
